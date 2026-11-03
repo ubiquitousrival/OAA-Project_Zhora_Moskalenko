@@ -72,6 +72,25 @@ class Trie:
                 words.extend(self.search_match(pattern, node.children[char], current_word + char, idx + 1))
         
         return words
+    def get_words_between(self, start_val, end_val, node=None, current_word=""):
+        if node is None:
+            node = self.root
+            
+        words = []
+        
+        if node.is_end:
+            if start_val <= current_word <= end_val:
+                words.append(current_word)
+
+        for char in sorted(node.children.keys()):
+            new_prefix = current_word + char
+            if new_prefix < start_val[:len(new_prefix)]:
+                continue
+            if new_prefix > end_val[:len(new_prefix)]:
+                continue
+            words.extend(self.get_words_between(start_val, end_val, node.children[char], new_prefix))
+            
+        return words
 
 class Interpreter:
     def __init__(self):
@@ -162,7 +181,7 @@ class Interpreter:
             if m := between_re.match(condition):
                 start_val, end_val = m.group(1), m.group(2)
                 all_words = self.sets[name].get_all_words()
-                result_words = [w for w in all_words if start_val <= w <= end_val]
+                result_words = self.sets[name].get_words_between(start_val, end_val)
             elif m := match_re.match(condition):
                 pattern = m.group(1)
                 result_words = self.sets[name].search_match(pattern)
