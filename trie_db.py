@@ -180,7 +180,6 @@ class Interpreter:
             
             if m := between_re.match(condition):
                 start_val, end_val = m.group(1), m.group(2)
-                all_words = self.sets[name].get_all_words()
                 result_words = self.sets[name].get_words_between(start_val, end_val)
             elif m := match_re.match(condition):
                 pattern = m.group(1)
